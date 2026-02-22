@@ -3,299 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Studio Pro | Full Experience</title>
+    <title>Web Studio Pro | Dlbas Universe</title>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        :root {
-            --bg: #030712; --card: #111827; --accent: #2563eb;
-            --border: #374151; --text: #ffffff; --text-dim: #9ca3af;
-            --header-h: 120px;
+        /* Estilos rápidos para asegurar la visibilidad de los cartuchos */
+        .game-card { position: relative; overflow: hidden; background: #111; border: 2px solid #444; }
+        .mini-canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+        .cartridge-ui { 
+            position: absolute; bottom: 10px; left: 0; right: 0; 
+            display: flex; justify-content: center; opacity: 0.8; transition: 0.3s;
         }
-        .light-mode {
-            --bg: #f3f4f6; --card: #ffffff; --accent: #2563eb;
-            --border: #d1d5db; --text: #111827; --text-dim: #4b5563;
+        .game-card:hover .cartridge-ui { opacity: 1; transform: translateY(-5px); }
+        .btn-mini { font-size: 10px !important; padding: 5px 10px !important; cursor: pointer; }
+        .game-card h3 { 
+            position: absolute; top: 0; width: 100%; background: rgba(0,0,0,0.7); 
+            margin: 0; font-size: 12px; padding: 5px 0; z-index: 2;
         }
-
-        body { 
-            background: var(--bg); color: var(--text); 
-            font-family: 'Segoe UI', sans-serif; margin: 0; 
-            transition: 0.3s; overflow-x: hidden; 
-        }
-
-        /* --- CABECERA CON SERPIENTE --- */
-        header {
-            position: sticky; top: 0; z-index: 1000;
-            height: var(--header-h); width: 100%;
-            background: var(--card); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 40px; box-sizing: border-box; overflow: hidden;
-        }
-
-        #snakeCanvas {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1; opacity: 0.4; background: #000;
-        }
-
-        .header-content {
-            position: relative; z-index: 10;
-            display: flex; width: 100%; justify-content: space-between; align-items: center;
-            pointer-events: none;
-        }
-        
-        .header-content div, .header-content button { pointer-events: auto; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--accent); letter-spacing: -1px; }
-
-        .logo img {
-    width: 80px;
-    border-radius: 50px;
-}
-
-        .controls { display: flex; align-items: center; gap: 15px; }
-        .score-board {
-            background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 6px;
-            font-family: monospace; font-size: 14px; color: var(--accent);
-            border: 1px solid var(--accent);
-        }
-
-        /* --- LAYOUT --- */
-        .main-grid {
-            max-width: 1400px; margin: 20px auto;
-            display: grid; grid-template-columns: 1fr 400px;
-            gap: 25px; padding: 0 20px;
-        }
-
-        .panel { 
-            background: var(--card); border-radius: 24px; 
-            padding: 25px; border: 1px solid var(--border); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        /* BOTONES DE CATEGORÍA (CORREGIDOS) */
-        .cat-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        
-        .btn {
-            background: var(--accent); color: #fff; border: none; 
-            padding: 10px 20px; border-radius: 10px; cursor: pointer; 
-            font-weight: bold; font-size: 12px; transition: 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .btn-sec { 
-            background: var(--bg); 
-            color: var(--text-dim); 
-            border: 1px solid var(--border);
-        }
-
-        /* Clase para el botón seleccionado */
-        .btn-sec.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
-        }
-
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
-
-        /* NAVEGADOR Y IFRAME */
-        .browser { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 15px 0; background: #000; }
-        .bar { background: var(--border); padding: 10px; display: flex; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg); opacity: 0.5; }
-        iframe { width: 100%; height: 500px; border: none; background: #fff; transition: opacity 0.3s; }
-
-        /* CHAT */
-        #chat-msgs { height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 5px; }
-        .m { padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 85%; line-height: 1.5; }
-        .b { background: var(--bg); align-self: flex-start; border: 1px solid var(--border); }
-        .u { background: var(--accent); color: white; align-self: flex-end; }
-        .chat-input { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
-
-        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
+    <canvas id="bgCanvas"></canvas>
 
-<header id="header">
-    <canvas id="snakeCanvas"></canvas>
-    <div class="header-content">
-        <div class="logo"><img src="img/logo.png""></div>
-        <div class="controls">
-            <div class="score-board">SCORE: <span id="score">0</span></div>
-            <button class="btn" onclick="toggleTheme()">🌓 TEMA</button>
-            <button class="btn btn-sec" id="soundBtn" onclick="toggleSound()">🔊 SONIDO</button>
-        </div>
-    </div>
-</header>
-
-<div class="main-grid">
-    <div class="panel">
-        <div class="cat-nav">
-            <button class="btn btn-sec active" onclick="setCat('ecommerce', this)">E-commerce</button>
-            <button class="btn btn-sec" onclick="setCat('corporate', this)">Corporativa</button>
-            <button class="btn btn-sec" onclick="setCat('landing', this)">Landing Page</button>
-        </div>
-        
-        <div class="browser">
-            <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-            <iframe id="viewer"></iframe>
+    <header id="header">
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameOverlay">
+            <div class="huge-logo">DLABS</div>
+            <button class="play-btn-mc" onclick="startGame()" id="mainBtn">JUGAR PARTIDA</button>
+            <button class="play-btn-mc" id="exitBtn" onclick="exitGame()" style="display:none; background:#8b2d2d;">SALIR AL MENÚ</button>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 id="p-title" style="margin:0">Cargando...</h2>
-                <p id="p-desc" style="color:var(--text-dim); font-size: 14px;">Descripción del proyecto.</p>
+        <div class="header-content">
+            <div class="logo"><img src="img/logo.png" id="logoImg"></div>
+            <div class="header-ui-right">
+                <div class="score-board">
+                    <span>LVL: <span id="lvl">1</span></span>
+                    <span>PTS: <span id="score">0</span></span>
+                    <span>VIDAS: <span id="lives" style="color: #ff5555;">❤❤❤</span></span>
+                </div>
+                <button class="play-btn-mc btn-retro" onclick="toggleTheme(event)">TEMA</button>
+                <button class="play-btn-mc btn-retro" id="muteBtn" onclick="toggleMute(event)">🔊</button>
             </div>
-            <div id="p-price" style="font-size: 32px; font-weight: 900; color: var(--accent);">0€</div>
+        </div>
+    </header>
+
+    <h1 style="text-align: center; image-rendering: pixelated;">PROYECTOS WEBS</h1>
+
+    <div class="main-grid">
+        <div class="panel">
+            <div id="cat-nav" class="cat-nav-container"></div>
+            <div class="browser"><iframe id="viewer"></iframe></div>
+            <div class="browser-nav">
+                <button class="play-btn-mc btn-retro" onclick="prevProject()">ANTERIOR</button>
+                <button class="play-btn-mc btn-retro" onclick="nextProject()">SIGUIENTE</button>
+            </div>
+            <div class="project-details">
+                <div><h2 id="p-title">Cargando...</h2><p id="p-desc"></p></div>
+                <div id="p-price">0€</div>
+            </div>
         </div>
 
-        <div style="display: flex; gap: 15px; margin-top: 20px;">
-            <button class="btn" onclick="move(-1)" style="flex:1">ANTERIOR</button>
-            <button class="btn" onclick="move(1)" style="flex:1">SIGUIENTE</button>
+        <div class="panel">
+            <h3 style="margin-top:0">Asistente Dlbas</h3>
+            <div id="chat-msgs"></div>
+            <div class="chat-input-group">
+                <input type="text" id="chat-in" placeholder="Escribe..." onkeydown="if(event.key==='Enter') sendMsg()">
+                <button class="cat-btn" onclick="sendMsg()">></button>
+            </div>
         </div>
     </div>
 
-    <div class="panel">
-        <div id="chat-msgs"></div>
-        <div id="chat-ctrls" class="chat-input"></div>
+    <h1 style="text-align: center; image-rendering: pixelated;">MINIJUEGOS RETRO</h1>
+
+    <div class="minigames-container" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 20px;">
+        
+        <div class="game-card" tabindex="1">
+            <h3>Pixel Dino</h3>
+            <canvas id="m1" class="mini-canvas"></canvas>
+            <div class="cartridge-ui" id="i1">
+                <button class="play-btn-mc btn-mini" onclick="startM(1)">INSERT COIN</button>
+            </div>
+        </div>
+
+        <div class="game-card" tabindex="2">
+            <h3>Retro Snake</h3>
+            <canvas id="m2" class="mini-canvas"></canvas>
+            <div class="cartridge-ui" id="i2">
+                <button class="play-btn-mc btn-mini" onclick="startM(2)">INSERT COIN</button>
+            </div>
+        </div>
+
+        <div class="game-card" tabindex="3">
+            <h3>Bit Bounce</h3>
+            <canvas id="m3" class="mini-canvas"></canvas>
+            <div class="cartridge-ui" id="i3">
+                <button class="play-btn-mc btn-mini" onclick="startM(3)">INSERT COIN</button>
+            </div>
+        </div>
+
+        <div class="game-card" tabindex="4">
+            <h3>Bot Clicker</h3>
+            <canvas id="m4" class="mini-canvas"></canvas>
+            <div class="cartridge-ui" id="i4">
+                <button class="play-btn-mc btn-mini" onclick="startM(4)">INSERT COIN</button>
+            </div>
+        </div>
+
     </div>
-</div>
 
-<script>
-    // --- LÓGICA JUEGO SERPIENTE FONDO ---
-    const canvas = document.getElementById('snakeCanvas');
-    const ctx = canvas.getContext('2d');
-    const headerEl = document.getElementById('header');
-    let box = 20, snake, food, d, score, gameLoop;
+    <footer class="footer-arcade">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Walter — Web Developer</h3>
+                <p>Creando experiencias digitales con precisión y estilo.</p>
+            </div>
 
-    function initGame() {
-        canvas.width = headerEl.offsetWidth;
-        canvas.height = headerEl.offsetHeight;
-        const cols = Math.floor(canvas.width / box);
-        const rows = Math.floor(canvas.height / box);
-        snake = [{x: Math.floor(cols/2)*box, y: Math.floor(rows/2)*box}];
-        food = { x: Math.floor(Math.random()*cols)*box, y: Math.floor(Math.random()*rows)*box };
-        d = "RIGHT"; score = 0; document.getElementById('score').innerText = score;
-        if(gameLoop) clearInterval(gameLoop);
-        gameLoop = setInterval(draw, 100);
-    }
+            <div class="footer-nav">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="#about">Sobre mí</a></li>
+                    <li><a href="#projects">Proyectos</a></li>
+                    <li><a href="#skills">Habilidades</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </div>
 
-    window.addEventListener('resize', initGame);
-    document.addEventListener("keydown", e => {
-        if(e.keyCode == 37 && d != "RIGHT") d = "LEFT";
-        else if(e.keyCode == 38 && d != "DOWN") d = "UP";
-        else if(e.keyCode == 39 && d != "LEFT") d = "RIGHT";
-        else if(e.keyCode == 40 && d != "UP") d = "DOWN";
-        if([37,38,39,40].includes(e.keyCode)) e.preventDefault();
-    });
+            <div class="footer-social">
+                <h4>Redes</h4>
+                <ul>
+                    <li><a href="https://github.com/" target="_blank">GitHub</a></li>
+                    <li><a href="https://www.linkedin.com/" target="_blank">LinkedIn</a></li>
+                    <li><a href="mailto:flxwalte@gmail.com">Email</a></li>
+                </ul>
+            </div>
 
-    function draw() {
-        ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#ff4444"; ctx.fillRect(food.x, food.y, box-2, box-2);
-        for(let i=0; i<snake.length; i++){
-            ctx.fillStyle = (i==0) ? "#2563eb" : "#1d4ed8";
-            ctx.fillRect(snake[i].x, snake[i].y, box-2, box-2);
-        }
-        let sx = snake[0].x, sy = snake[0].y;
-        if(d=="LEFT") sx-=box; if(d=="UP") sy-=box; if(d=="RIGHT") sx+=box; if(d=="DOWN") sy+=box;
-        if(sx>=canvas.width) sx=0; if(sx<0) sx=Math.floor(canvas.width/box)*box-box;
-        if(sy>=canvas.height) sy=0; if(sy<0) sy=Math.floor(canvas.height/box)*box-box;
-        if(sx==food.x && sy==food.y){
-            score++; document.getElementById('score').innerText = score; playTone(800,0.05);
-            food = { x: Math.floor(Math.random()*(canvas.width/box))*box, y: Math.floor(Math.random()*(canvas.height/box))*box };
-        } else { snake.pop(); }
-        let head = {x:sx, y:sy};
-        for(let i=0; i<snake.length; i++) if(head.x==snake[i].x && head.y==snake[i].y) { playTone(200,0.2); initGame(); return; }
-        snake.unshift(head);
-    }
+            <div class="footer-cta">
+                <h4>¿Listo para jugar una partida?</h4>
+                <a class="footer-btn" href="#contact">Start</a>
+            </div>
+        </div>
 
-    // --- SONIDO Y TEMA ---
-    let soundOn = true;
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function toggleSound() { soundOn = !soundOn; document.getElementById('soundBtn').innerText = soundOn ? "🔊 SONIDO" : "🔇 MUTED"; }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); playTone(600, 0.1); }
-    function playTone(freq, dur) {
-        if (!soundOn) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
-        osc.start(); osc.stop(audioCtx.currentTime + dur);
-    }
+        <div class="footer-bottom">
+            <p>© 2026 Walter — Portfolio Arcade Edition</p>
+        </div>
+    </footer>
 
-    // --- PORTFOLIO (DATA Y LÓGICA) ---
-    const projects = {
-        ecommerce: [
-            { n: "Lux Shop", p: "1.200€", d: "E-commerce de lujo.", u: "https://flxwalte.github.io/ethereal/" },
-            { n: "Tech Hub", p: "950€", d: "Tienda de componentes.", u: "https://flxwalte.github.io/tienda-tecnologica/" },
-            { n: "Game Hub", p: "1550€", d: "Tienda de juegos online.", u: "https://flxwalte.github.io/tienda-tecnologica/" },
-            { n: "Second Hub", p: "1350€", d: "Tienda de segunda mano.", u: "https://flxwalte.github.io/segunda-mano/" }
-            
-        ],
-        corporate: [
-            { n: "Legal Pro", p: "800€", d: "Web para bufetes.", u: "https://flxwalte.github.io/abogado/" },
-            { n: "Menu Pro", p: "600€", d: "Web para banquetes.", u: "https://flxwalte.github.io/carta-interactiva/" },
-            { n: "Homenaje Pro", p: "500€", d: "Web homenaje a Venezuela.", u: "https://flxwalte.github.io/venezuela/" },
-            
-        ],
-        landing: [
-            { n: "Masias", p: "350€", d: "Landing de captación.", u: "https://flxwalte.github.io/masia/" },
-            { n: "dentista", p: "350€", d: "Landing de captación.", u: "https://flxwalte.github.io/dentista/" },
-            { n: "Viajes", p: "350€", d: "Landing de captación.", u: "https://flxwalte.github.io/agencia-de-viajes/" }
-        ]
-    };
-    let curCat = 'ecommerce', curIdx = 0;
-
-    function render() {
-        const item = projects[curCat][curIdx];
-        const iframe = document.getElementById('viewer');
-        iframe.style.opacity = "0"; // Efecto desvanecer al cargar
-        setTimeout(() => {
-            iframe.src = item.u;
-            document.getElementById('p-title').innerText = item.n;
-            document.getElementById('p-desc').innerText = item.d;
-            document.getElementById('p-price').innerText = item.p;
-            iframe.style.opacity = "1";
-        }, 200);
-        playTone(400, 0.05);
-    }
-
-    // FUNCIÓN CORREGIDA PARA ACTUALIZAR BOTONES
-    function setCat(c, btnElement) {
-        curCat = c; curIdx = 0;
-        // Quitar 'active' de todos los botones en el nav de categorías
-        const buttons = btnElement.parentElement.querySelectorAll('.btn-sec');
-        buttons.forEach(b => b.classList.remove('active'));
-        // Poner 'active' al presionado
-        btnElement.classList.add('active');
-        render();
-    }
-
-    function move(s) { curIdx = (curIdx + s + projects[curCat].length) % projects[curCat].length; render(); }
-
-    // --- BRIEFING ---
-    const chatMsgs = document.getElementById('chat-msgs');
-    const chatCtrls = document.getElementById('chat-ctrls');
-    function addB(t) { chatMsgs.innerHTML += `<div class="m b">${t}</div>`; chatMsgs.scrollTop = chatMsgs.scrollHeight; }
-    function addU(t) { chatMsgs.innerHTML += `<div class="m u">${t}</div>`; chatMsgs.scrollTop = chatMsgs.scrollHeight; }
-
-    function step1() {
-        addB("¡Hola! ¿Buscamos una <b>Plantilla</b> o algo <b>Personalizado</b>?");
-        chatCtrls.innerHTML = `
-            <button class="btn" style="width:100%; margin-bottom:8px" onclick="save('mod','Plantilla',step2)">Plantilla</button>
-            <button class="btn" style="width:100%" onclick="save('mod','Personalizado',step2)">Personalizado</button>`;
-    }
-    function step2() {
-        addB("¿Qué funciones necesitas?");
-        chatCtrls.innerHTML = `
-            <label style="display:block; margin-bottom:10px; font-size:12px"><input type="checkbox" class="fx" value="Pagos"> Pagos Online</label>
-            <label style="display:block; margin-bottom:10px; font-size:12px"><input type="checkbox" class="fx" value="Chatbot"> Chatbot</label>
-            <button class="btn" style="width:100%" onclick="confirmFx()">Siguiente</button>`;
-    }
-    function save(k,v,next) { addU(v); playTone(600,0.1); setTimeout(next, 500); }
-    function confirmFx() { addU("Funciones seleccionadas"); setTimeout(() => { addB("¡Perfecto! Analizaremos tu solicitud."); chatCtrls.innerHTML=""; }, 600); }
-
-    initGame(); render(); step1();
-</script>
-
+    <script src="js/projects.js"></script>
+    <script src="js/core.js"></script>
+    <script src="js/header-game.js"></script>
+    <script src="js/minigames.js"></script>
 </body>
 </html>

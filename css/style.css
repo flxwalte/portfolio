@@ -1,0 +1,296 @@
+:root {
+    --bg: #030712; --card: #111827; --accent: #2563eb;
+    --border: #374151; --text: #ffffff; --text-dim: #9ca3af;
+    --header-h: 220px;
+}
+.light-mode {
+    --bg: #f3f4f6; --card: #ffffff; --accent: #2563eb;
+    --border: #d1d5db; --text: #111827; --text-dim: #4b5563;
+}
+
+body { 
+    background: var(--bg); color: var(--text); 
+    font-family: 'Segoe UI', sans-serif; margin: 0; 
+    transition: 0.3s; overflow-x: hidden; 
+}
+
+#bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; image-rendering: pixelated; pointer-events: none; }
+
+header {
+    position: sticky; top: 0; z-index: 1000;
+    height: var(--header-h); width: 100%;
+    background: var(--card); border-bottom: 3px solid var(--accent);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; box-sizing: border-box; overflow: hidden;
+}
+
+#gameCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; image-rendering: pixelated; }
+
+#gameOverlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 20; display: flex; flex-direction: column; align-items: center; transition: 0.4s;
+}
+#gameOverlay.hidden { opacity: 0; transform: translate(-50%, -60%); pointer-events: none; }
+
+.huge-logo {
+    font-family: 'Courier New', monospace; font-size: 80px; font-weight: 900; color: #ffff55;
+    text-shadow: 0 8px 0 #3f3f00, 4px 10px 15px rgba(0,0,0,0.5);
+    margin-bottom: 20px; animation: mcFloat 4s ease-in-out infinite; letter-spacing: 10px;
+}
+@keyframes mcFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+.play-btn-mc {
+    background: #5a5a5a; color: white; border: 3px solid #000;
+    padding: 12px 40px; font-family: 'Courier New', monospace; font-weight: bold;
+    font-size: 18px; cursor: pointer; box-shadow: inset -4px -4px 0px #333, inset 4px 4px 0px #aaa;
+    width: 280px; text-shadow: 2px 2px #000; transition: 0.1s;
+}
+.play-btn-mc:hover { background: #777; }
+.btn-retro { width: auto; padding: 8px 15px; font-size: 12px; }
+.btn-mini { width: 100%; font-size: 12px; }
+
+.header-content { position: relative; z-index: 10; display: flex; width: 100%; justify-content: space-between; align-items: center; pointer-events: none; }
+.logo img {
+    width: 180px;
+    /* border: 3px solid #555; */
+    /* background: #000; */
+    pointer-events: auto;
+}
+.header-ui-right { display: flex; align-items: center; gap: 10px; pointer-events: auto; }
+.score-board { background: rgba(0,0,0,0.8); padding: 10px 20px; border: 2px solid #555; color: #ffff55; display: flex; gap: 20px; font-family: monospace; }
+
+.main-grid { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 400px; gap: 25px; padding: 0 20px; position: relative; z-index: 5; }
+.panel { background: var(--card); border-radius: 20px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.cat-nav-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+
+.cat-btn {
+    background: #5a5a5a;
+    color: white;
+    border: 3px solid #000;
+    padding: 3px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: inset -4px -4px 0px #333, inset 4px 4px 0px #aaa;
+    width: 120px;
+    text-shadow: 2px 2px #000;
+    transition: 0.1s;
+
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+/* .cat-btn { padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; transition: 0.2s; font-weight: 600; } */
+
+
+
+.cat-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.browser { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin: 15px 0; background: #000; height: 500px; }
+.browser-nav { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+.project-details { display: flex; justify-content: space-between; align-items: center; }
+#p-price { font-size: 32px; font-weight: 800; color: #10b981; }
+
+.chat-input-group { display: flex; gap: 10px; margin-top: 15px; }
+#chat-in { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: white; }
+
+#chat-msgs {
+    height: 600px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.m { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 14px; }
+.m.b { background: var(--bg); align-self: flex-start; border: 1px solid var(--border); }
+.m.u { background: var(--accent); color: white; align-self: flex-end; }
+
+.minigames-container { max-width: 1400px; margin: 40px auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 0 20px; }
+.game-card { background: var(--card); border: 2px solid var(--border); border-radius: 15px; padding: 15px; text-align: center; height: 340px; outline: none; }
+.game-card:focus-within { border-color: #ffff55; }
+.mini-canvas { background: #000; width: 100%; height: 200px; border-radius: 8px; display: none; image-rendering: pixelated; border: 1px solid var(--accent); }
+
+
+iframe#viewer {
+    width: 100%;
+    height: 500px;
+}
+
+
+
+
+
+.footer-arcade {
+  background: #0a0a0a;
+  color: #f2f2f2;
+  padding: 50px 20px 30px;
+  font-family: 'Press Start 2P', monospace;
+  border-top: 4px solid #ffd700;
+}
+
+.footer-grid {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+}
+
+.footer-arcade h3,
+.footer-arcade h4 {
+  color: #ffd700;
+  margin-bottom: 15px;
+}
+
+.footer-arcade p {
+  line-height: 1.6;
+  font-size: 12px;
+}
+
+.footer-nav ul,
+.footer-social ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-nav a,
+.footer-social a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.footer-nav a:hover,
+.footer-social a:hover {
+  color: #ffd700;
+}
+
+.footer-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #ffd700;
+  color: #0a0a0a;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.footer-btn:hover {
+  background: #e0c200;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 10px;
+  color: #888;
+}
+
+
+
+
+h1 {
+    width: 100%;
+    text-align: center;
+    font-size: xxx-large;
+}
+
+
+
+
+
+
+/* Contenedor de la Estantería de Juegos */
+.minigame-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: #1a1a1a;
+}
+
+/* El Cartucho Individual */
+.game-cartridge {
+    width: 130px;
+    background: #333;
+    border: 3px solid #555;
+    border-radius: 4px 4px 2px 2px;
+    padding: 8px;
+    text-align: center;
+    box-shadow: 0 4px 0 #000;
+    image-rendering: pixelated;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.game-cartridge:hover {
+    transform: translateY(-4px);
+    border-color: #2563eb;
+}
+
+/* Etiqueta del título (Estilo Consola) */
+.game-label {
+    background: #b91c1c; /* Rojo Retro */
+    color: white;
+    font-size: 10px;
+    padding: 4px 2px;
+    margin: 8px 0;
+    border: 1px inset rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.pixel-preview-box {
+    background: #000;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #222;
+}
+
+.play-btn-retro {
+    background: #444;
+    color: #0f0;
+    border: none;
+    font-size: 9px;
+    padding: 4px 8px;
+    cursor: pointer;
+    width: 100%;
+}
+
+
+.game-card {
+    width: 300px; /* Pantallas más grandes */
+    height: 300px;
+    background: #000;
+    border: 4px solid #333;
+    position: relative;
+}
+
+.mini-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    image-rendering: pixelated; /* Mantiene los píxeles nítidos */
+    display: block;
+}
+
+.cartridge-ui {
+    background: rgba(185, 28, 28, 0.9); /* Rojo retro */
+    padding: 10px;
+}
