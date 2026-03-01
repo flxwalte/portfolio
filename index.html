@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Studio Pro | Dlbas Universe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
+
+<style>
+    #mouse-game-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 99999;
+        background: #000;
+        display: none; /* Se activa al dar click */
+    }
+    .pixel-canvas {
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+    }
+</style>
     <link rel="stylesheet" href="css/style.css">
     <style>
         /* Estilos rápidos para asegurar la visibilidad de los cartuchos */
@@ -112,6 +131,7 @@
 
     <footer class="footer-arcade">
         <div class="footer-grid">
+            
             <div class="footer-brand">
                 <h3>Walter — Web Developer</h3>
                 <p>Creando experiencias digitales con precisión y estilo.</p>
@@ -138,8 +158,9 @@
 
             <div class="footer-cta">
                 <h4>¿Listo para jugar una partida?</h4>
-                <a class="footer-btn" href="#contact">Start</a>
+                <a class="footer-btn" href="javascript:void(0)" onclick="startMouseAdventure()">Start</a>
             </div>
+
         </div>
 
         <div class="footer-bottom">
